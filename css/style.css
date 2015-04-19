@@ -1,0 +1,24 @@
+body
+{
+	background-color: black;
+	color:white;
+	font-size: 18pt;
+	font-family: monospace;
+	margin-top:300px;
+	text-align: center;
+}
+
+#cursor
+{
+	background-color: white;
+	animation-duration: 1s;
+	animation-timing-function: ease;
+	animation-iteration-count: infinite;
+	animation-name: cursor-blink;
+}
+
+@keyframes cursor-blink {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
