@@ -1,6 +1,6 @@
 
 //animation for the prompt
-var intro_delay = 800;
+var intro_delay = 1200;
 var intro_text = [
 	{ time: 0,    key:'T' },
 	{ time: 150,  key:'e' },
@@ -16,8 +16,13 @@ var intro_text = [
 	{ time: 2263, key:'t' },
 	{ time: 2391, key:'o' },
 	{ time: 2535, key:'r' },
-	{ time: 2615, key:'y' }
+	{ time: 2615, key:'y' },
+	{ time: 3300, key:'<br>' },
+	{ time: 3700, key:'<br>' }
 ];
+
+//elements
+var $text;
 
 //search API
 var query_url = "https://api.datamarket.azure.com/Bing/Search/v1/Image?Query="
@@ -46,15 +51,25 @@ function write_intro(done)
 	setTimeout(done, intro_text[intro_text.length - 1].time + intro_delay);
 }
 
+function on_key(e)
+{
+	if(e.keyCode == 0) //normal keys
+	{
+		$text.text($text.text() + e.key);
+	}
+	else if(e.keyCode == 8) //backspace
+	{
+		var t = $text.text();
+		$text.text(t.substring(0, t.length - 1));
+	}
+}
+
 $(function(e) {
+	$text = $("#text");
+
 	write_intro(function() {
 
 		//finished animating the prompt, attach relevant event handlers
-
-		window.onkeypress = function(e) {
-			var text = document.querySelector("#text");
-			text.innerHTML += e.key;
-			console.log(e);
-		};
+		window.onkeypress = on_key;
 	});
 });
