@@ -19,14 +19,15 @@ var intro_text = [
 	{ time: 2615, key:'y' }
 ];
 
-window.onkeypress = function(e) {
-	var text = document.querySelector("#text");
-	text.innerHTML += e.key;
-	console.log(e);
-};
+//search API
+var query_url = "https://api.datamarket.azure.com/Bing/Search/v1/Image?Query="
 
+function query_url_for(words)
+{
+	return query_url + "%27" + "%20".join(words) + "%27";
+}
 
-function write_intro()
+function write_intro(done)
 {
 	var text = document.querySelector("#text");
 
@@ -40,9 +41,20 @@ function write_intro()
 	intro_text.forEach(function(e) {
 		write_char(e.key, e.time);
 	});
+
+	//report ready once the last animation frame has been triggered
+	setTimeout(done, intro_text[intro_text.length - 1].time + intro_delay);
 }
 
-window.onload = function(e) {
+$(function(e) {
+	write_intro(function() {
 
-	write_intro();
-};
+		//finished animating the prompt, attach relevant event handlers
+
+		window.onkeypress = function(e) {
+			var text = document.querySelector("#text");
+			text.innerHTML += e.key;
+			console.log(e);
+		};
+	});
+});
