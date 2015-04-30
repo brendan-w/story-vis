@@ -5,7 +5,6 @@
 var dev_mode = true;
 
 //search API
-var API_key = "";
 var query_url = "https://api.datamarket.azure.com/Bing/Search/Image?";
 
 //animation for the prompt
@@ -31,14 +30,14 @@ var intro_text = [
 ];
 
 //elements
+var $main;
 var $prompt;
 var $text;
 
 
 function query_url_for(str)
 {
-	var url = query_url + "Query=%27" + encodeURIComponent(str) + "%27";
-	return url;
+	return query_url + "Query=%27" + encodeURIComponent(str) + "%27";
 }
 
 function write_intro(done)
@@ -60,6 +59,7 @@ function write_intro(done)
 
 function on_key(e)
 {
+
 	if(e.keyCode == 0) //normal keys
 	{
 		$text.text($text.text() + e.key);
@@ -67,6 +67,8 @@ function on_key(e)
 	}
 	else if(e.keyCode == 8) //backspace
 	{
+		e.preventDefault(); //prevent backspace from going back in page history
+
 		if(e.ctrlKey)
 		{
 			//because it's annoying when ctrl+backspace isn't implemented
@@ -108,12 +110,14 @@ function image_for_str(str, done)
 			xhr.setRequestHeader ("Authorization", "Basic " + btoa(API_key + ":" + API_key));
 		},
 		error: function(xhr) {
+			console.log("API error:");
 			console.log(xhr);
 		}
 	});
 }
 
 $(function(e) {
+	$main = $("#main");
 	$prompt = $("#prompt");
 	$text = $("#text");
 

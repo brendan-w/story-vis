@@ -1,11 +1,11 @@
 body
 {
+	position: relative;
 	background-color: black;
 	color:white;
 	font-size: 18pt;
 	font-family: monospace;
-	margin-top:300px;
-	text-align: center;
+	margin-top:200px;
 }
 
 #cursor
@@ -21,4 +21,12 @@ body
   0% { opacity: 0; }
   50% { opacity: 1; }
   100% { opacity: 0; }
+}
+
+#main
+{
+	position: absolute;
+	white-space: nowrap;
+	right:20%;
+	min-width:60%;
 }
