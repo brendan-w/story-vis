@@ -73,11 +73,11 @@ function write_intro(done)
 
 	intro_text.forEach(function(e) {
 		var t = dev_mode ? 0 : (intro_delay + e.time);
-		write_char(e.key, t);
+		write_char(e.key, (intro_delay + e.time));
 	});
 
 	//report ready once the last animation frame has been triggered
-	var t = dev_mode ? 0 : (intro_delay + intro_text[intro_text.length - 1].time);
+	var t = (intro_delay + intro_text[intro_text.length - 1].time);
 	setTimeout(done, t);
 }
 
@@ -148,11 +148,18 @@ $(function(e) {
 	$prompt = $("#prompt");
 	$text = $("#text");
 
-	write_intro(function() {
+	if(!dev_mode)
+	{
+		write_intro(function() {
 
-		//finished animating the prompt, attach relevant event handlers
+			//finished animating the prompt, attach relevant event handlers
+			window.onkeypress = on_key;
+		});
+	}
+	else
+	{
 		window.onkeypress = on_key;
-	});
+	}
 
 	// image_for_str("red car", function(data) {
 	// 	console.log(data);
