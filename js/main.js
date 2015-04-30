@@ -148,17 +148,19 @@ $(function(e) {
 	$prompt = $("#prompt");
 	$text = $("#text");
 
+	function main()
+	{
+		//finished animating the prompt, attach relevant event handlers
+		window.onkeypress = on_key;
+	}
+
 	if(!dev_mode)
 	{
-		write_intro(function() {
-
-			//finished animating the prompt, attach relevant event handlers
-			window.onkeypress = on_key;
-		});
+		write_intro(main);
 	}
 	else
 	{
-		window.onkeypress = on_key;
+		main();
 	}
 
 	// image_for_str("red car", function(data) {
