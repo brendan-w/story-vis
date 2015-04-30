@@ -1,4 +1,9 @@
 
+"use strict";
+
+//dev mode omits animations, 'cause they get annoying after a while... 
+var dev_mode = true;
+
 //animation for the prompt
 var intro_delay = 1200;
 var intro_text = [
@@ -22,6 +27,7 @@ var intro_text = [
 ];
 
 //elements
+var $prompt;
 var $text;
 
 //search API
@@ -34,12 +40,10 @@ function query_url_for(words)
 
 function write_intro(done)
 {
-	var text = document.querySelector("#text");
-
 	function write_char(c, wait)
 	{
 		setTimeout(function() {
-			text.innerHTML += c;
+			$prompt.append(c);
 		}, intro_delay + wait);
 	}
 
@@ -56,15 +60,28 @@ function on_key(e)
 	if(e.keyCode == 0) //normal keys
 	{
 		$text.text($text.text() + e.key);
+		// $text.append(document.createTextNode(e.key));
 	}
 	else if(e.keyCode == 8) //backspace
 	{
-		var t = $text.text();
-		$text.text(t.substring(0, t.length - 1));
+		if(e.ctrlKey)
+		{
+			//because it's annoying when ctrl+backspace isn't implemented
+			//delete last word
+			var t = $text.text();
+			$text.text(t.substring(0, t.lastIndexOf(' ')));			
+		}
+		else
+		{
+			//delete last character
+			var t = $text.text();
+			$text.text(t.substring(0, t.length - 1));
+		}
 	}
 }
 
 $(function(e) {
+	$prompt = $("#prompt");
 	$text = $("#text");
 
 	write_intro(function() {
