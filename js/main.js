@@ -90,21 +90,19 @@ function image_for_str(str, done)
 		method: 'GET',
 		dataType: "json",
 		success: function(data) {
-			var result = null;
-
 			if(data.d.results.length > 0)
 			{
 				//take the first image result
-				var t = data.d.results[0].Thumbnail;
-
-				result = {
-					url: t.MediaUrl,
-					w: t.Width,
-					h: t.Height
+				var img = new Image();
+				img.onload = function() {
+					done(img);
 				};
+				img.src = data.d.results[0].Thumbnail.MediaUrl;
 			}
-
-			done(result);
+			else
+			{
+				done(null);
+			}
 		},
 		beforeSend: function(xhr) {
 			xhr.setRequestHeader ("Authorization", "Basic " + btoa(API_key + ":" + API_key));
