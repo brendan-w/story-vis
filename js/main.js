@@ -4,6 +4,10 @@
 //dev mode omits animations, 'cause they get annoying after a while... 
 var dev_mode = true;
 
+//search API
+var API_key = "";
+var query_url = "https://api.datamarket.azure.com/Bing/Search/Image?";
+
 //animation for the prompt
 var intro_delay = 1200;
 var intro_text = [
@@ -30,12 +34,11 @@ var intro_text = [
 var $prompt;
 var $text;
 
-//search API
-var query_url = "https://api.datamarket.azure.com/Bing/Search/v1/Image?Query="
 
-function query_url_for(words)
+function query_url_for(str)
 {
-	return query_url + "%27" + "%20".join(words) + "%27";
+	var url = query_url + "Query=%27" + encodeURIComponent(str) + "%27";
+	return url;
 }
 
 function write_intro(done)
@@ -80,6 +83,38 @@ function on_key(e)
 	}
 }
 
+function image_for_str(str, done)
+{
+	$.ajax({
+		url: query_url_for(str),
+		method: 'GET',
+		dataType: "json",
+		success: function(data) {
+			var result = null;
+
+			if(data.d.results.length > 0)
+			{
+				//take the first image result
+				var t = data.d.results[0].Thumbnail;
+
+				result = {
+					url: t.MediaUrl,
+					w: t.Width,
+					h: t.Height
+				};
+			}
+
+			done(result);
+		},
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader ("Authorization", "Basic " + btoa(API_key + ":" + API_key));
+		},
+		error: function(xhr) {
+			console.log(xhr);
+		}
+	});
+}
+
 $(function(e) {
 	$prompt = $("#prompt");
 	$text = $("#text");
@@ -89,4 +124,8 @@ $(function(e) {
 		//finished animating the prompt, attach relevant event handlers
 		window.onkeypress = on_key;
 	});
+
+	// image_for_str("red car", function(data) {
+	// 	console.log(data);
+	// });
 });
