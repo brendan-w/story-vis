@@ -34,6 +34,9 @@ var $main;
 var $prompt;
 var $text;
 
+//running vars
+var buffer_start = 0;
+
 
 function query_url_for(str)
 {
@@ -46,15 +49,17 @@ function write_intro(done)
 	{
 		setTimeout(function() {
 			$prompt.append(c);
-		}, intro_delay + wait);
+		}, wait);
 	}
 
 	intro_text.forEach(function(e) {
-		write_char(e.key, e.time);
+		var t = dev_mode ? 0 : (intro_delay + e.time);
+		write_char(e.key, t);
 	});
 
 	//report ready once the last animation frame has been triggered
-	setTimeout(done, intro_text[intro_text.length - 1].time + intro_delay);
+	var t = dev_mode ? 0 : (intro_delay + intro_text[intro_text.length - 1].time);
+	setTimeout(done, t);
 }
 
 function on_key(e)
