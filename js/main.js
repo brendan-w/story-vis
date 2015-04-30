@@ -44,7 +44,17 @@ function buffer()
 
 function clean(str)
 {
-	return str.replace(blacklist, " ");
+	var words = str.split(' ');
+	var output = "";
+
+	for(var i = 0; i < words.length; i++)
+	{
+		var word = words[i].replace(punctuation, "");
+		if(!blacklist.test(word))
+			output += " " + word;
+	}
+
+	return output;
 }
 
 function query_url_for(str)
@@ -73,11 +83,14 @@ function write_intro(done)
 
 function on_key(e)
 {
+	var t = $text.text();
 
 	if(e.keyCode == 0) //normal keys
 	{
-		$text.text($text.text() + e.key);
-		// $text.append(document.createTextNode(e.key));
+		if((e.key == ' ') && (t[t.length - 1] == ' '))
+			return; //prevent more than one space in a row
+
+		$text.text(t + e.key);			
 	}
 	else if(e.keyCode == 8) //backspace
 	{
@@ -87,13 +100,11 @@ function on_key(e)
 		{
 			//because it's annoying when ctrl+backspace isn't implemented
 			//delete last word
-			var t = $text.text();
 			$text.text(t.substring(0, t.lastIndexOf(' ')));			
 		}
 		else
 		{
 			//delete last character
-			var t = $text.text();
 			$text.text(t.substring(0, t.length - 1));
 		}
 	}
