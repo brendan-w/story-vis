@@ -37,6 +37,15 @@ var $text;
 //running vars
 var buffer_start = 0;
 
+function buffer()
+{
+	return $text.text().substring(buffer_start);
+}
+
+function clean(str)
+{
+	return str.replace(blacklist, " ");
+}
 
 function query_url_for(str)
 {
@@ -88,6 +97,8 @@ function on_key(e)
 			$text.text(t.substring(0, t.length - 1));
 		}
 	}
+
+	console.log(clean(buffer()));
 }
 
 function image_for_str(str, done)
