@@ -5,13 +5,12 @@
 var dev_mode = true;
 
 //elements
-var $main;
 var $prompt;
 var $text;
+var $images;
 
 //running vars
 var segments = [0]; //indices of split points between text segments (not including 0)
-var images = [];
 var image_store = {}; //hashmap of string to images (prevents duplicate queries)
 
 
@@ -45,14 +44,12 @@ function clean(str)
 
 	for(var i = 0; i < words.length; i++)
 	{
-		if(word)
+		var word = words[i].replace(punctuation, "");
+
+		if(word && !blacklist.test(word))
 		{
-			var word = words[i].replace(punctuation, "");
-			if(!blacklist.test(word))
-			{
-				if(output.length > 0) output += " ";
-				output += word;
-			}
+			if(output.length > 0) output += " ";
+			output += word;
 		}
 	}
 
@@ -138,46 +135,39 @@ function log(msg)
 	console.log(images);
 }
 
-function on_segment()
-{
-	var i = last_split();
-	var buffer = $text.text().substring(i);
-	var c = clean(buffer);
-
-	//query the image
-
-	// console.log(buffer);
-	// console.log(c);
-}
-
 function text_added(key)
 {
-
 	if(splitlist.test(key))
 	{
-		//placeholder element, will get overwritten upon img_loaded()
-		images.push(null); 
+		var start_i = last_split();
+		var end_i = $text.text().length;
+		var buffer = $text.text().substring(start_i);
+		var query = clean(buffer);
 
 		//query the image for the now-completed segment
-		on_segment();
-		log("added");
+		image_for_str(query, function(img) {
+			$images.append(img);
+		});
+
+		console.log(buffer + " --> " + query);
+		// log("added");
 
 		//advance by storing this index as a segment split-point
-		segments.push($text.text().length);
+		segments.push(end_i);
 	}
 }
 
 function text_removed()
 {
-	log("removed");
 
 	//if we just deleted a split point, pop it
 	if($text.text().length < last_split())
 	{
-		if(images.length > 0)
+		if(segments.length > 1)
 		{
+			// log("removed");
 			segments.pop();
-			var img = images.pop();
+			$images.children().last().remove();
 		}
 	}
 }
@@ -187,7 +177,9 @@ function on_key(e)
 {
 	var t = $text.text();
 
-	if(e.keyCode == 0) //normal keys
+	if((e.keyCode == 0) &&
+	   (e.ctrlKey == false) &&
+	   (e.altKey == false)) //normal keys
 	{
 		if((e.key == ' ') && (t[t.length - 1] == ' '))
 			return; //prevent more than one space in a row (consistent with HTML)
@@ -210,9 +202,9 @@ function on_key(e)
 }
 
 $(function(e) {
-	$main = $("#main");
 	$prompt = $("#prompt");
 	$text = $("#text");
+	$images = $("#images");
 
 	function main()
 	{
@@ -224,8 +216,4 @@ $(function(e) {
 		write_intro(main);
 	else
 		main();
-
-	// image_for_str("red car", function(data) {
-	// 	console.log(data);
-	// });
 });
