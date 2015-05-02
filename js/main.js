@@ -11,7 +11,7 @@ var $images;
 
 //running vars
 var segments = [0]; //indices of split points between text segments (not including 0)
-var image_store = {}; //hashmap of string to images (prevents duplicate queries)
+var image_store = {}; //hashmap of string to image urls (prevents duplicate queries)
 
 
 /*
@@ -66,12 +66,12 @@ function query_url_for(str)
 	return query_url + "Query=%27" + encodeURIComponent(str) + "%27";
 }
 
-function image_for_str(str, done)
+function image_for_str(str, img)
 {
 	if(image_store.hasOwnProperty(str))
 	{
 		//no AJAX query needed, we've done this before
-		done(image_store[str]);
+		img.src = image_store[str];
 	}
 	else
 	{
@@ -83,14 +83,8 @@ function image_for_str(str, done)
 				if(data.d.results.length > 0)
 				{
 					//take the first image result
-					var img = new Image();
-					img.onload = function() { done(img); };
 					img.src = data.d.results[0].Thumbnail.MediaUrl;
-					image_store[str] = img; //save a ref, so we don't query twice
-				}
-				else
-				{
-					done(null);
+					image_store[str] = img.src; //save the source, so we don't query twice
 				}
 			},
 			beforeSend: function(xhr) {
@@ -144,10 +138,11 @@ function text_added(key)
 		var buffer = $text.text().substring(start_i);
 		var query = clean(buffer);
 
+		var img = new Image();
+		$images.append(img);
+
 		//query the image for the now-completed segment
-		image_for_str(query, function(img) {
-			$images.append(img);
-		});
+		image_for_str(query, img);
 
 		console.log(buffer + " --> " + query);
 		// log("added");
@@ -159,7 +154,6 @@ function text_added(key)
 
 function text_removed()
 {
-
 	//if we just deleted a split point, pop it
 	if($text.text().length < last_split())
 	{

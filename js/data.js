@@ -40,5 +40,5 @@ var blacklist = new RegExp("^(" + ([
 	"make", "can", "no", "just", "him", "we", "it", "into", "your", "some",
 	"could", "them", "other", "than", "then", "now", "only", "come", "its",
 	"it's", "also", "use", "how", "our", "even", "new", "want", "because",
-	"any", "these", "most", "us"
+	"any", "these", "most", "us", "was"
 ].join("|")) + ")$");
