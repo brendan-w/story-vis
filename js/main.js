@@ -36,10 +36,21 @@ var $text;
 
 //running vars
 var buffer_start = 0;
+var images = {}; //hashmap of string to images (prevents duplicate queries)
+
+
+/*
+	Buffer Operations
+*/
 
 function buffer()
 {
 	return $text.text().substring(buffer_start);
+}
+
+function split_buffer(str)
+{
+	return str.split(splitlist);
 }
 
 function clean(str)
@@ -54,13 +65,61 @@ function clean(str)
 			output += " " + word;
 	}
 
-	return output;
+	return output.substring(1); //remove beginning space
 }
+
+
+/*
+	Image Search API
+*/
 
 function query_url_for(str)
 {
 	return query_url + "Query=%27" + encodeURIComponent(str) + "%27";
 }
+
+function image_for_str(str, done)
+{
+	if(images.hasOwnProperty(str))
+	{
+		//no AJAX query needed, we've done this before
+		done(images[str]);
+	}
+	else
+	{
+		$.ajax({
+			url: query_url_for(str),
+			method: 'GET',
+			dataType: "json",
+			success: function(data) {
+				if(data.d.results.length > 0)
+				{
+					//take the first image result
+					var img = new Image();
+					img.onload = function() { done(img); };
+					img.src = data.d.results[0].Thumbnail.MediaUrl;
+					images[str] = img; //save a ref, so we don't query twice
+				}
+				else
+				{
+					done(null);
+				}
+			},
+			beforeSend: function(xhr) {
+				xhr.setRequestHeader ("Authorization", "Basic " + btoa(API_key + ":" + API_key));
+			},
+			error: function(xhr) {
+				console.log("API error:");
+				console.log(xhr);
+			}
+		});
+	}
+}
+
+
+/*
+	UI
+*/
 
 function write_intro(done)
 {
@@ -110,37 +169,6 @@ function on_key(e)
 	}
 
 	console.log(clean(buffer()));
-}
-
-function image_for_str(str, done)
-{
-	$.ajax({
-		url: query_url_for(str),
-		method: 'GET',
-		dataType: "json",
-		success: function(data) {
-			if(data.d.results.length > 0)
-			{
-				//take the first image result
-				var img = new Image();
-				img.onload = function() {
-					done(img);
-				};
-				img.src = data.d.results[0].Thumbnail.MediaUrl;
-			}
-			else
-			{
-				done(null);
-			}
-		},
-		beforeSend: function(xhr) {
-			xhr.setRequestHeader ("Authorization", "Basic " + btoa(API_key + ":" + API_key));
-		},
-		error: function(xhr) {
-			console.log("API error:");
-			console.log(xhr);
-		}
-	});
 }
 
 $(function(e) {
