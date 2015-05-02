@@ -39,7 +39,7 @@ function last_split()
 
 function clean(str)
 {
-	var words = clean_array(str.split(' '));
+	var words = clean_array(str.toLowerCase().split(' '));
 	var output = "";
 
 	for(var i = 0; i < words.length; i++)
@@ -133,12 +133,12 @@ function text_added(key)
 {
 	if(splitlist.test(key))
 	{
-		var start_i = last_split();
-		var end_i = $text.text().length;
-		var buffer = $text.text().substring(start_i);
+		var buffer = $text.text().substring(last_split());
 		var query = clean(buffer);
 
 		var img = new Image();
+		img.style.width = "auto"
+		img.style.height = "200px";
 		$images.append(img);
 
 		//query the image for the now-completed segment
@@ -148,7 +148,7 @@ function text_added(key)
 		// log("added");
 
 		//advance by storing this index as a segment split-point
-		segments.push(end_i);
+		segments.push($text.text().length);
 	}
 }
 

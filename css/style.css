@@ -23,7 +23,7 @@ body
   100% { opacity: 0; }
 }
 
-#main
+#main, #images
 {
 	position: absolute;
 	white-space: nowrap;
@@ -33,4 +33,5 @@ body
 
 #images
 {
+	padding-top:50px;
 }
