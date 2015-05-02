@@ -4,68 +4,59 @@
 //dev mode omits animations, 'cause they get annoying after a while... 
 var dev_mode = true;
 
-//search API
-var query_url = "https://api.datamarket.azure.com/Bing/Search/Image?";
-
-//animation for the prompt
-var intro_delay = 1200;
-var intro_text = [
-	{ time: 0,    key:'T' },
-	{ time: 150,  key:'e' },
-	{ time: 359,  key:'l' },
-	{ time: 720,  key:'l' },
-	{ time: 1040, key:' ' },
-	{ time: 1367, key:'m' },
-	{ time: 1511, key:'e' },
-	{ time: 1599, key:' ' },
-	{ time: 1727, key:'a' },
-	{ time: 1871, key:' ' },
-	{ time: 2039, key:'s' },
-	{ time: 2263, key:'t' },
-	{ time: 2391, key:'o' },
-	{ time: 2535, key:'r' },
-	{ time: 2615, key:'y' },
-	{ time: 3300, key:'<br>' },
-	{ time: 3700, key:'<br>' }
-];
-
 //elements
 var $main;
 var $prompt;
 var $text;
 
 //running vars
-var buffer_start = 0;
-var images = {}; //hashmap of string to images (prevents duplicate queries)
+var segments = [0]; //indices of split points between text segments (not including 0)
+var images = [];
+var image_store = {}; //hashmap of string to images (prevents duplicate queries)
+
+
+/*
+	Utils
+*/
+
+function clean_array(arr)
+{
+	var cleaned = [];
+	arr.forEach(function(e) {
+		if(e) cleaned.push(e);
+	});
+	return cleaned;
+}
 
 
 /*
 	Buffer Operations
 */
 
-function buffer()
+function last_split()
 {
-	return $text.text().substring(buffer_start);
-}
-
-function split_buffer(str)
-{
-	return str.split(splitlist);
+	return segments[segments.length - 1];
 }
 
 function clean(str)
 {
-	var words = str.split(' ');
+	var words = clean_array(str.split(' '));
 	var output = "";
 
 	for(var i = 0; i < words.length; i++)
 	{
-		var word = words[i].replace(punctuation, "");
-		if(!blacklist.test(word))
-			output += " " + word;
+		if(word)
+		{
+			var word = words[i].replace(punctuation, "");
+			if(!blacklist.test(word))
+			{
+				if(output.length > 0) output += " ";
+				output += word;
+			}
+		}
 	}
 
-	return output.substring(1); //remove beginning space
+	return output;
 }
 
 
@@ -80,10 +71,10 @@ function query_url_for(str)
 
 function image_for_str(str, done)
 {
-	if(images.hasOwnProperty(str))
+	if(image_store.hasOwnProperty(str))
 	{
 		//no AJAX query needed, we've done this before
-		done(images[str]);
+		done(image_store[str]);
 	}
 	else
 	{
@@ -98,7 +89,7 @@ function image_for_str(str, done)
 					var img = new Image();
 					img.onload = function() { done(img); };
 					img.src = data.d.results[0].Thumbnail.MediaUrl;
-					images[str] = img; //save a ref, so we don't query twice
+					image_store[str] = img; //save a ref, so we don't query twice
 				}
 				else
 				{
@@ -140,6 +131,57 @@ function write_intro(done)
 	setTimeout(done, t);
 }
 
+function log(msg)
+{
+	console.log(msg);
+	console.log(segments);
+	console.log(images);
+}
+
+function on_segment()
+{
+	var i = last_split();
+	var buffer = $text.text().substring(i);
+	var c = clean(buffer);
+
+	//query the image
+
+	// console.log(buffer);
+	// console.log(c);
+}
+
+function text_added(key)
+{
+	console.log("added: " + key)
+	if(splitlist.test(key))
+	{
+		//placeholder element, will get overwritten upon img_loaded()
+		images.push(null); 
+
+		//query the image for the now-completed segment
+		on_segment();
+		log("split-point");
+
+		//advance by storing this index as a segment split-point
+		segments.push($text.text().length);
+	}
+}
+
+function text_removed()
+{
+	//if we just deleted a split point, pop it
+	if($text.text().length < last_split())
+	{
+		if(images.length > 0)
+		{
+			segments.pop();
+			var img = images.pop();
+			log("removed");
+		}
+	}
+}
+
+
 function on_key(e)
 {
 	var t = $text.text();
@@ -147,28 +189,23 @@ function on_key(e)
 	if(e.keyCode == 0) //normal keys
 	{
 		if((e.key == ' ') && (t[t.length - 1] == ' '))
-			return; //prevent more than one space in a row
+			return; //prevent more than one space in a row (consistent with HTML)
 
-		$text.text(t + e.key);			
+		$text.text(t + e.key);
+
+		text_added(e.key);
 	}
 	else if(e.keyCode == 8) //backspace
 	{
-		e.preventDefault(); //prevent backspace from going back in page history
+		e.preventDefault(); //prevent backspace from doing page history
 
-		if(e.ctrlKey)
-		{
-			//because it's annoying when ctrl+backspace isn't implemented
-			//delete last word
-			$text.text(t.substring(0, t.lastIndexOf(' ')));			
-		}
+		if(e.ctrlKey) //because it's annoying when ctrl+backspace isn't implemented
+			$text.text(t.substring(0, t.lastIndexOf(' ')));
 		else
-		{
-			//delete last character
 			$text.text(t.substring(0, t.length - 1));
-		}
-	}
 
-	console.log(clean(buffer()));
+		text_removed();
+	}
 }
 
 $(function(e) {
@@ -183,13 +220,9 @@ $(function(e) {
 	}
 
 	if(!dev_mode)
-	{
 		write_intro(main);
-	}
 	else
-	{
 		main();
-	}
 
 	// image_for_str("red car", function(data) {
 	// 	console.log(data);
