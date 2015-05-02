@@ -152,7 +152,7 @@ function on_segment()
 
 function text_added(key)
 {
-	console.log("added: " + key)
+
 	if(splitlist.test(key))
 	{
 		//placeholder element, will get overwritten upon img_loaded()
@@ -160,7 +160,7 @@ function text_added(key)
 
 		//query the image for the now-completed segment
 		on_segment();
-		log("split-point");
+		log("added");
 
 		//advance by storing this index as a segment split-point
 		segments.push($text.text().length);
@@ -169,6 +169,8 @@ function text_added(key)
 
 function text_removed()
 {
+	log("removed");
+
 	//if we just deleted a split point, pop it
 	if($text.text().length < last_split())
 	{
@@ -176,7 +178,6 @@ function text_removed()
 		{
 			segments.pop();
 			var img = images.pop();
-			log("removed");
 		}
 	}
 }
