@@ -2,7 +2,7 @@
 "use strict";
 
 //dev mode omits animations, 'cause they get annoying after a while... 
-var animations = false;
+var animations = true;
 var image_search = false;
 
 
@@ -29,6 +29,15 @@ function clean_array(arr)
 	return cleaned;
 }
 
+function random_range(min, max)
+{
+    return Math.random() * (max - min) + min;
+}
+
+function scroll_to_bottom()
+{
+	window.scrollTo(0, document.body.scrollHeight);
+}
 
 /*
 	Buffer Operations
@@ -87,6 +96,7 @@ function image_for_str(str, img)
 					//take the first image result
 					img.onload = function() {
 						img.className = ""; //remove the "loading" class
+						scroll_to_bottom();
 					};
 					img.src = data.d.results[0].Thumbnail.MediaUrl;
 					image_store[str] = img.src; //save the source, so we don't query twice
@@ -108,6 +118,7 @@ function image_for_str(str, img)
 	UI
 */
 
+
 function write_intro(done)
 {
 	function write_char(c, wait)
@@ -126,12 +137,26 @@ function write_intro(done)
 	setTimeout(done, t);
 }
 
-function log(msg)
+//automated key-pusher
+function write_text(str)
 {
-	console.log(msg);
-	console.log(segments);
-	console.log(images);
+	function write_char(c, wait)
+	{
+		setTimeout(function() {
+			$text.text($text.text() + c);
+			text_added(c);
+		}, wait);
+	}
+
+	var total_time = 0;
+
+	for(var i = 0; i < str.length; i++)
+	{
+		total_time += random_range(20, 300);
+		write_char(str[i], total_time);
+	}
 }
+
 
 function text_added(key)
 {
@@ -140,23 +165,24 @@ function text_added(key)
 		var buffer = $text.text().substring(last_split());
 		var query = clean(buffer);
 
-		var img = new Image();
-		img.className = "loading";
-		img.src = "loading.gif";
-		$images.append(img);
+		if(query.length > 0)
+		{
+			var img = new Image();
+			img.className = "loading";
+			img.src = "loading.gif";
+			$images.append(img);
 
-		//scroll to the bottom
-		window.scrollTo(0, document.body.scrollHeight);
+			scroll_to_bottom();
 
-		//query the image for the now-completed segment
-		if(image_search)
-			image_for_str(query, img);
+			//query the image for the now-completed segment
+			if(image_search)
+				image_for_str(query, img);
 
-		console.log(buffer + " --> " + query);
-		// log("added");
+			console.log(buffer + " --> " + query);
 
-		//advance by storing this index as a segment split-point
-		segments.push($text.text().length);
+			//advance by storing this index as a segment split-point
+			segments.push($text.text().length);
+		}
 	}
 }
 
@@ -167,7 +193,6 @@ function text_removed()
 	{
 		if(segments.length > 1)
 		{
-			// log("removed");
 			segments.pop();
 			$images.children().last().remove();
 		}
@@ -214,6 +239,7 @@ $(function(e) {
 	{
 		//finished animating the prompt, attach relevant event handlers
 		window.onkeypress = on_key;
+		//write_text(sample);
 	}
 
 	if(animations)
