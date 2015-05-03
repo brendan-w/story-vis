@@ -83,6 +83,9 @@ function image_for_str(str, img)
 				if(data.d.results.length > 0)
 				{
 					//take the first image result
+					img.onload = function() {
+						img.className = ""; //remove the "loading" class
+					};
 					img.src = data.d.results[0].Thumbnail.MediaUrl;
 					image_store[str] = img.src; //save the source, so we don't query twice
 				}
@@ -137,8 +140,8 @@ function text_added(key)
 		var query = clean(buffer);
 
 		var img = new Image();
-		img.style.width = "auto"
-		img.style.height = "200px";
+		img.className = "loading";
+		img.src = "loading.gif";
 		$images.append(img);
 
 		//query the image for the now-completed segment
@@ -175,6 +178,8 @@ function on_key(e)
 	   (e.ctrlKey == false) &&
 	   (e.altKey == false)) //normal keys
 	{
+		e.preventDefault();
+
 		if((e.key == ' ') && (t[t.length - 1] == ' '))
 			return; //prevent more than one space in a row (consistent with HTML)
 

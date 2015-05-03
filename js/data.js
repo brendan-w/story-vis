@@ -32,7 +32,7 @@ var punctuation = /[\$\uFFE5\^\+=`~<>{}\[\]|\u3000-\u303F!-#%-\x2A,-/:;\x3F@\x5B
 // "^(word1|word2|word3)$"
 
 var blacklist = new RegExp("^(" + ([
-	"the", "be", "to", "of", "and", "a", "in", "that", "have", "i", "is",
+	"the", "be", "to", "of", "and", "a", "that", "have", "i", "is",
 	"it", "for", "not", "on", "he", "as", "you", "do", "at", "this", "but",
 	"his", "by", "from", "they", "we", "say", "her", "she", "or", "an",
 	"will", "my", "one", "all", "would", "there", "their", "what", "so",

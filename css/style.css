@@ -5,7 +5,9 @@ body
 	color:white;
 	font-size: 18pt;
 	font-family: monospace;
-	margin-top:200px;
+
+	height:100vh;
+	margin:0% 20%;
 }
 
 #cursor
@@ -23,15 +25,30 @@ body
   100% { opacity: 0; }
 }
 
-#main, #images
+#main
 {
-	position: absolute;
-	white-space: nowrap;
-	right:20%;
-	min-width:60%;
+	position: relative;
+	height:30%;
+	border:1px solid red;
 }
 
-#images
+#main-content
 {
-	padding-top:50px;
+	position: absolute;
+	bottom:0px;
+	width:100%;
+	border:1px solid yellow;
+}
+
+#images img
+{
+	width: auto;
+	height: 200px;
+}
+
+#images img.loading
+{
+	height:32px;
+	padding: 84px; /* 100 - 16 */
+	background-color:#333;
 }
