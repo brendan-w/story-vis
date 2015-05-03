@@ -118,7 +118,6 @@ function write_intro(done)
 	}
 
 	intro_text.forEach(function(e) {
-		var t = dev_mode ? 0 : (intro_delay + e.time);
 		write_char(e.key, (intro_delay + e.time));
 	});
 
