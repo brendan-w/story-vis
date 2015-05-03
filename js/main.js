@@ -1,15 +1,12 @@
 
 "use strict";
 
-//dev mode omits animations, 'cause they get annoying after a while... 
-var animations = true;
-var image_search = false;
-
 
 //elements
 var $prompt;
 var $text;
 var $images;
+var $samples;
 
 //running vars
 var segments = [0]; //indices of split points between text segments (not including 0)
@@ -152,7 +149,7 @@ function write_text(str)
 
 	for(var i = 0; i < str.length; i++)
 	{
-		total_time += random_range(20, 300);
+		total_time += random_range(key_min_wait, key_max_wait);
 		write_char(str[i], total_time);
 	}
 }
@@ -228,18 +225,37 @@ function on_key(e)
 
 		text_removed();
 	}
+
+	//enable or disable the sample selector
+	if($text.text().length == 0)
+		$samples.css({'opacity': 1});
+	else
+		$samples.css({'opacity': 0});
+}
+
+function select_sample(e)
+{
+	var i = parseInt(e.target.getAttribute('i'));
+	if(i < samples.length)
+	{
+		$samples.css({'opacity': 0});
+		window.onkeypress = undefined;
+		write_text(samples[i]);
+	}
 }
 
 $(function(e) {
 	$prompt = $("#prompt");
 	$text = $("#text");
 	$images = $("#images");
+	$samples = $("#samples");
 
 	function main()
 	{
 		//finished animating the prompt, attach relevant event handlers
 		window.onkeypress = on_key;
-		//write_text(sample);
+		$samples.css({'opacity': 1});
+		$samples.find('li').click(select_sample);
 	}
 
 	if(animations)

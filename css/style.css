@@ -65,3 +65,29 @@ body
 	padding: 84px; /* 100 - 16 */
 	background-color:#333;
 }
+
+#samples
+{
+	position: absolute;
+	line-height: 1; /* since this was set to zero for the image spacing*/
+	opacity: 0;
+	-webkit-transition: opacity 1s ease-in-out;
+	-moz-transition: opacity 1s ease-in-out;
+	-ms-transition: opacity 1s ease-in-out;
+	-o-transition: opacity 1s ease-in-out;
+	transition: opacity 1s ease-in-out;
+}
+
+#samples li
+{
+	font-size: 10pt;
+	padding: 10px;
+	border:1px solid #333;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+#samples li:hover
+{
+	border-color: white;
+}
