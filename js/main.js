@@ -2,7 +2,9 @@
 "use strict";
 
 //dev mode omits animations, 'cause they get annoying after a while... 
-var dev_mode = true;
+var animations = false;
+var image_search = false;
+
 
 //elements
 var $prompt;
@@ -144,8 +146,12 @@ function text_added(key)
 		img.src = "loading.gif";
 		$images.append(img);
 
+		//scroll to the bottom
+		window.scrollTo(0, document.body.scrollHeight);
+
 		//query the image for the now-completed segment
-		image_for_str(query, img);
+		if(image_search)
+			image_for_str(query, img);
 
 		console.log(buffer + " --> " + query);
 		// log("added");
@@ -211,7 +217,7 @@ $(function(e) {
 		window.onkeypress = on_key;
 	}
 
-	if(!dev_mode)
+	if(animations)
 		write_intro(main);
 	else
 		main();

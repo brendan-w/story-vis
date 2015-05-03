@@ -27,17 +27,27 @@ body
 
 #main
 {
-	position: relative;
-	height:30%;
-	border:1px solid red;
+	position: fixed;
+	width:60%;
+	height:150px;
+	z-index: 1;
+	background-color: black;
 }
 
 #main-content
 {
 	position: absolute;
+	padding-bottom: 20px;
 	bottom:0px;
 	width:100%;
-	border:1px solid yellow;
+}
+
+#images
+{
+	position: relative;
+	top:150px;
+	width:100%;
+	min-height: calc(100% - 150px);
 }
 
 #images img
