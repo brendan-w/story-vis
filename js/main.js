@@ -166,7 +166,7 @@ function text_added(key)
 		{
 			var img = new Image();
 			img.className = "loading";
-			img.src = "loading.gif";
+			img.src = "content/loading.gif";
 			$images.append(img);
 
 			scroll_to_bottom();
@@ -235,13 +235,13 @@ function on_key(e)
 
 function select_sample(e)
 {
-	var i = parseInt(e.target.getAttribute('i'));
-	if(i < samples.length)
-	{
-		$samples.css({'opacity': 0});
+	var file = e.target.getAttribute('file');
+	$samples.css({'opacity': 0});
+
+	$.get('content/' + file, function(story) {
 		window.onkeypress = undefined;
-		write_text(samples[i]);
-	}
+		write_text(story);
+	});
 }
 
 $(function(e) {
