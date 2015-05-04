@@ -2,7 +2,7 @@
 
 //dev mode omits animations, 'cause they get annoying after a while... 
 var animations = false;
-var image_search = false;
+var image_search = true;
 
 //search API
 var query_url = "https://api.datamarket.azure.com/Bing/Search/Image?";

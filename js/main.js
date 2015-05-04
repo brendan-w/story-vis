@@ -53,6 +53,7 @@ function clean(str)
 	for(var i = 0; i < words.length; i++)
 	{
 		var word = words[i].replace(punctuation, "");
+		word = word.replace(/\n/gm, "");
 
 		if(word && !blacklist.test(word))
 		{
