@@ -1,7 +1,7 @@
 
 
 //dev mode omits animations, 'cause they get annoying after a while... 
-var animations = false;
+var animations = true;
 var image_search = true;
 
 //search API
@@ -44,10 +44,10 @@ var blacklist = new RegExp("^(" + ([
 	"the", "be", "to", "of", "and", "a", "that", "have", "i", "is",
 	"it", "for", "not", "on", "he", "as", "you", "do", "at", "this", "but",
 	"his", "by", "from", "they", "we", "say", "her", "she", "or", "an",
-	"will", "my", "one", "all", "would", "there", "their", "what", "so",
+	"will", "my", "one", "would", "there", "their", "what", "so",
 	"up", "out", "if", "about", "who", "get", "which", "me", "when",
-	"make", "can", "no", "just", "him", "we", "it", "into", "your", "some",
+	"can", "no", "just", "him", "we", "it", "into", "your", "some",
 	"could", "them", "other", "than", "then", "now", "only", "come", "its",
-	"it's", "also", "use", "how", "our", "even", "new", "want", "because",
-	"any", "these", "most", "us", "was"
+	"its", "also", "use", "how", "our", "even", "new", "want", "because",
+	"these", "most", "us", "was"
 ].join("|")) + ")$");
