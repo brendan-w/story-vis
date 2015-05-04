@@ -81,6 +81,8 @@ function image_for_str(str, img)
 	{
 		//no AJAX query needed, we've done this before
 		img.src = image_store[str];
+		img.className = ""; //remove the "loading" class
+		scroll_to_bottom();
 	}
 	else
 	{
